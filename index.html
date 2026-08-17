@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MindFocus - Children's Brain Training Game App with 20+ fun games for memory, focus, reaction speed and logical thinking.">
+  <meta name="keywords" content="brain training,children games,memory,focus,reaction,auditory training,math,maze,Schulte grid">
+  <meta name="theme-color" content="#667eea">
+  <title>MindFocus - Children's Brain Training Games</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+  <style>
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5a67d8;
+      --secondary: #764ba2;
+      --accent: #f093fb;
+      --success: #2ED573;
+      --warning: #FFA502;
+      --danger: #FF6B6B;
+      --text: #2d3748;
+      --text-light: #718096;
+      --bg: #f7fafc;
+      --white: #ffffff;
+      --shadow: 0 10px 30px rgba(0,0,0,0.1);
+      --shadow-sm: 0 4px 15px rgba(0,0,0,0.08);
+      --radius: 20px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* === Language Switch === */
+    .lang-switch {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      gap: 4px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 30px;
+      padding: 4px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    .lang-switch button {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 26px;
+      font-size: 0.9em;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-light);
+      transition: all 0.3s;
+    }
+
+    .lang-switch button.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .lang-switch button:hover:not(.active) {
+      color: var(--primary);
+    }
+
+    /* === Header / Hero === */
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 40%);
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 700px; }
+
+    .hero-icon {
+      font-size: 100px;
+      margin-bottom: 24px;
+      animation: float 3s ease-in-out infinite;
+      display: inline-block;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5em, 6vw, 4em);
+      font-weight: 800;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero p {
+      font-size: clamp(1.1em, 2.5vw, 1.35em);
+      opacity: 0.92;
+      margin-bottom: 40px;
+      line-height: 1.8;
+    }
+
+    /* === Sections === */
+    section { padding: 80px 20px; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.8em, 4vw, 2.5em);
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-light);
+      font-size: 1.1em;
+      margin-bottom: 50px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* === Features === */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+
+    .feature-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 35px 30px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow);
+    }
+
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+
+    .feature-card h3 {
+      font-size: 1.25em;
+      margin-bottom: 10px;
+      color: var(--primary-dark);
+    }
+
+    .feature-card p {
+      color: var(--text-light);
+      font-size: 0.95em;
+    }
+
+    /* === Games === */
+    .games-section {
+      background: linear-gradient(180deg, var(--bg) 0%, #edf2f7 100%);
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .game-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .game-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+
+    .game-emoji {
+      font-size: 36px;
+      flex-shrink: 0;
+    }
+
+    .game-info h4 {
+      font-size: 1.05em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .game-info p {
+      font-size: 0.85em;
+      color: var(--text-light);
+    }
+
+    .game-category {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.75em;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .cat-brain { background: #e9d8fd; color: #553c9a; }
+    .cat-audio { background: #fefcbf; color: #744210; }
+    .cat-assess { background: #fed7d7; color: #742a2a; }
+
+    /* === Screenshots === */
+    .screenshots-wrapper {
+      overflow-x: auto;
+      padding: 0 20px 20px;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+    }
+
+    .screenshots-inner {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .screenshot-card {
+      flex: 0 0 220px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 24px;
+      padding: 30px 20px;
+      color: white;
+      text-align: center;
+      scroll-snap-align: center;
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .screenshot-card .emoji {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .screenshot-card h4 {
+      font-size: 1.1em;
+      margin-bottom: 8px;
+    }
+
+    .screenshot-card p {
+      font-size: 0.85em;
+      opacity: 0.85;
+    }
+
+    /* === Stats === */
+    .stats-section {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 30px;
+      text-align: center;
+    }
+
+    .stat-item .number {
+      font-size: clamp(2em, 5vw, 3em);
+      font-weight: 800;
+    }
+
+    .stat-item .label {
+      font-size: 1em;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+
+    /* === Footer === */
+    footer {
+      background: #1a202c;
+      color: #a0aec0;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    footer a {
+      color: #63b3ed;
+      text-decoration: none;
+    }
+
+    footer a:hover { text-decoration: underline; }
+
+    footer p { margin-bottom: 8px; }
+
+    /* === Responsive === */
+    @media (max-width: 768px) {
+      section { padding: 60px 16px; }
+      .hero { min-height: 90vh; }
+      .hero-icon { font-size: 72px; }
+      .games-grid { grid-template-columns: 1fr; }
+      .screenshot-card { flex: 0 0 180px; min-height: 300px; }
+      .lang-switch { top: 12px; right: 12px; }
+      .lang-switch button { padding: 6px 14px; font-size: 0.8em; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Language Switch -->
+<div class="lang-switch">
+  <button id="btn-en" class="active" onclick="switchLang('en')">EN</button>
+  <button id="btn-zh" onclick="switchLang('zh')">中文</button>
+</div>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-icon">🧠</div>
+    <h1>MindFocus</h1>
+    <p>
+      <span class="lang-en">Brain Training Games for Kids<br>Boost focus, memory, reaction speed & logical thinking through play</span>
+      <span class="lang-zh" style="display:none">专为儿童设计的脑力训练游戏 App<br>在快乐中提升专注力、记忆力、反应力与逻辑思维</span>
+    </p>
+  </div>
+</section>
+
+<!-- ===== Features ===== -->
+<section id="features">
+  <div class="container">
+    <h2 class="section-title">
+      <span class="lang-en">Why Choose MindFocus?</span>
+      <span class="lang-zh" style="display:none">为什么选择 MindFocus？</span>
+    </h2>
+    <p class="section-subtitle">
+      <span class="lang-en">Scientifically designed training system for fun and effective learning</span>
+      <span class="lang-zh" style="display:none">科学设计的训练体系，让孩子在玩中学、学中乐</span>
+    </p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎮</div>
+        <h3>
+          <span class="lang-en">20+ Fun Games</span>
+          <span class="lang-zh" style="display:none">20+ 趣味游戏</span>
+        </h3>
+        <p>
+          <span class="lang-en">Memory, reaction, math, maze, Schulte grid and more training types</span>
+          <span class="lang-zh" style="display:none">涵盖记忆、反应、数学、迷宫、舒尔特方格等多种训练类型，趣味十足</span>
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>
+          <span class="lang-en">Progressive Difficulty</span>
+          <span class="lang-zh" style="display:none">渐进式难度</span>
+        </h3>
+        <p>
+          <span class="lang-en">Multiple levels from easy to hard for step-by-step improvement</span>
+          <span class="lang-zh" style="display:none">每个游戏都设有简单、中等、困难多个等级，循序渐进提升能力</span>
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👂</div>
+        <h3>
+          <span class="lang-en">Auditory Training</span>
+          <span class="lang-zh" style="display:none">听觉训练模块</span>
+        </h3>
+        <p>
+          <span class="lang-en">Number memory, story recall, command execution for comprehensive attention</span>
+          <span class="lang-zh" style="display:none">独特的数字记忆、故事记忆、指令执行等听觉练习，全面提升注意力</span>
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⭐</div>
+        <h3>
+          <span class="lang-en">Reward System</span>
+          <span class="lang-zh" style="display:none">激励奖励系统</span>
+        </h3>
+        <p>
+          <span class="lang-en">Star rewards, achievement badges, and reward center to keep kids motivated</span>
+          <span class="lang-zh" style="display:none">星星奖励、成就徽章、奖励中心，持续激发孩子学习动力</span>
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3>
+          <span class="lang-en">Bilingual Support</span>
+          <span class="lang-zh" style="display:none">中英文双语</span>
+        </h3>
+        <p>
+          <span class="lang-en">Chinese and English interface for families worldwide</span>
+          <span class="lang-zh" style="display:none">支持中文和 English 双语言界面，适合全球家庭使用</span>
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>
+          <span class="lang-en">Privacy & Safety</span>
+          <span class="lang-zh" style="display:none">安全隐私保护</span>
+        </h3>
+        <p>
+          <span class="lang-en">No registration, no personal data collection, distraction-free training</span>
+          <span class="lang-zh" style="display:none">无需注册、不收集个人信息，专注训练无打扰</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Games ===== -->
+<section class="games-section" id="games">
+  <div class="container">
+    <h2 class="section-title">
+      <span class="lang-en">Rich Game Matrix</span>
+      <span class="lang-zh" style="display:none">丰富的游戏矩阵</span>
+    </h2>
+    <p class="section-subtitle">
+      <span class="lang-en">Four training directions, 20+ carefully designed fun games</span>
+      <span class="lang-zh" style="display:none">四大训练方向，20+ 精心设计的趣味游戏</span>
+    </p>
+
+    <h3 style="text-align:center;margin-bottom:24px;color:var(--primary);">
+      <span class="lang-en">🧩 Visual Brain Training</span>
+      <span class="lang-zh" style="display:none">🧩 视觉脑力训练</span>
+    </h3>
+    <div class="games-grid" style="margin-bottom:40px;">
+      <div class="game-card">
+        <div class="game-emoji">🃏</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Memory Match</span>
+            <span class="lang-zh" style="display:none">记忆配对</span>
+          </h4>
+          <p>
+            <span class="lang-en">Flip cards to find pairs, train visual memory</span>
+            <span class="lang-zh" style="display:none">翻牌找相同，锻炼视觉记忆</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">⚡</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Reaction Training</span>
+            <span class="lang-zh" style="display:none">反应训练</span>
+          </h4>
+          <p>
+            <span class="lang-en">Quickly tap bubbles to boost reaction speed</span>
+            <span class="lang-zh" style="display:none">快速点击气泡，提升反应速度</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">🔢</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Math Speed</span>
+            <span class="lang-zh" style="display:none">数学速算</span>
+          </h4>
+          <p>
+            <span class="lang-en">Fruit arithmetic, timed quiz challenge</span>
+            <span class="lang-zh" style="display:none">水果算术，限时答题挑战</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">🔍</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Focus Training</span>
+            <span class="lang-zh" style="display:none">专注力训练</span>
+          </h4>
+          <p>
+            <span class="lang-en">Find the different emoji, train observation</span>
+            <span class="lang-zh" style="display:none">找不同 emoji，训练观察力</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">🧩</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Puzzle Game</span>
+            <span class="lang-zh" style="display:none">拼图游戏</span>
+          </h4>
+          <p>
+            <span class="lang-en">Sliding puzzle, develop spatial thinking</span>
+            <span class="lang-zh" style="display:none">滑动拼图，培养空间思维</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">🏰</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Maze Adventure</span>
+            <span class="lang-zh" style="display:none">迷宫探险</span>
+          </h4>
+          <p>
+            <span class="lang-en">Memory-mode maze, improve spatial memory</span>
+            <span class="lang-zh" style="display:none">记忆模式迷宫，提升空间记忆</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">🧮</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Logical Reasoning</span>
+            <span class="lang-zh" style="display:none">逻辑推理</span>
+          </h4>
+          <p>
+            <span class="lang-en">Pattern reasoning, develop logical thinking</span>
+            <span class="lang-zh" style="display:none">规律推理，培养逻辑思维</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">🎯</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Speed Challenge</span>
+            <span class="lang-zh" style="display:none">速度挑战</span>
+          </h4>
+          <p>
+            <span class="lang-en">Timed target tapping, boost focus speed</span>
+            <span class="lang-zh" style="display:none">限时点击目标，提升专注速度</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">📐</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Schulte Grid</span>
+            <span class="lang-zh" style="display:none">舒尔特方格</span>
+          </h4>
+          <p>
+            <span class="lang-en">Classic concentration training method</span>
+            <span class="lang-zh" style="display:none">经典专注力训练方法</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">📖</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Language Memory</span>
+            <span class="lang-zh" style="display:none">语言记忆</span>
+          </h4>
+          <p>
+            <span class="lang-en">Speed reading to find keywords</span>
+            <span class="lang-zh" style="display:none">快速阅读找关键词</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">🟦</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Spatial Awareness</span>
+            <span class="lang-zh" style="display:none">空间感知</span>
+          </h4>
+          <p>
+            <span class="lang-en">Tetris-style gameplay, train spatial imagination</span>
+            <span class="lang-zh" style="display:none">俄罗斯方块，锻炼空间想象</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">👆</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Hand-Eye Coordination</span>
+            <span class="lang-zh" style="display:none">手眼协调</span>
+          </h4>
+          <p>
+            <span class="lang-en">Stroop test, rule-switching training</span>
+            <span class="lang-zh" style="display:none">Stroop 测试，规则切换训练</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">⚖️</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Balance Training</span>
+            <span class="lang-zh" style="display:none">平衡训练</span>
+          </h4>
+          <p>
+            <span class="lang-en">Phone sensor tilt control</span>
+            <span class="lang-zh" style="display:none">利用手机传感器倾斜控制</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">✏️</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Cancellation Training</span>
+            <span class="lang-zh" style="display:none">划消训练</span>
+          </h4>
+          <p>
+            <span class="lang-en">Quick target recognition, improve filtering ability</span>
+            <span class="lang-zh" style="display:none">快速识别目标，提升筛选能力</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="text-align:center;margin-bottom:24px;color:var(--warning);">
+      <span class="lang-en">👂 Auditory Training</span>
+      <span class="lang-zh" style="display:none">👂 听觉训练</span>
+    </h3>
+    <div class="games-grid">
+      <div class="game-card">
+        <div class="game-emoji">🔢</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Number Memory / Reverse</span>
+            <span class="lang-zh" style="display:none">数字记忆 / 倒背</span>
+          </h4>
+          <p>
+            <span class="lang-en">Recall or reverse numbers after hearing</span>
+            <span class="lang-zh" style="display:none">听数字后复述或倒背</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">💬</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Word / Sentence Memory</span>
+            <span class="lang-zh" style="display:none">词语 / 句子记忆</span>
+          </h4>
+          <p>
+            <span class="lang-en">Recall words or sentences after listening</span>
+            <span class="lang-zh" style="display:none">听词语表或句子后回忆</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">📚</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Story Memory</span>
+            <span class="lang-zh" style="display:none">故事记忆</span>
+          </h4>
+          <p>
+            <span class="lang-en">Listen to stories and answer questions</span>
+            <span class="lang-zh" style="display:none">听故事后回答问题</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">🎵</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Sound Recognition</span>
+            <span class="lang-zh" style="display:none">声音识别</span>
+          </h4>
+          <p>
+            <span class="lang-en">Identify animal calls and nature sounds</span>
+            <span class="lang-zh" style="display:none">辨别动物叫声和自然声音</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">📝</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Command Execution</span>
+            <span class="lang-zh" style="display:none">指令执行</span>
+          </h4>
+          <p>
+            <span class="lang-en">Follow multi-step instructions correctly</span>
+            <span class="lang-zh" style="display:none">听多步指令后正确执行</span>
+          </p>
+        </div>
+      </div>
+      <div class="game-card">
+        <div class="game-emoji">🔗</div>
+        <div class="game-info">
+          <h4>
+            <span class="lang-en">Word Chain</span>
+            <span class="lang-zh" style="display:none">词语接龙</span>
+          </h4>
+          <p>
+            <span class="lang-en">Say a new word based on the previous one</span>
+            <span class="lang-zh" style="display:none">根据前一个词说出新词</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Screenshots ===== -->
+<section id="screenshots">
+  <div class="container">
+    <h2 class="section-title">
+      <span class="lang-en">Game Preview</span>
+      <span class="lang-zh" style="display:none">游戏预览</span>
+    </h2>
+    <p class="section-subtitle">
+      <span class="lang-en">Beautiful cartoon interfaces that kids will love</span>
+      <span class="lang-zh" style="display:none">精美卡通界面，让孩子们爱不释手</span>
+    </p>
+    <div class="screenshots-wrapper">
+      <div class="screenshots-inner">
+        <div class="screenshot-card">
+          <div class="emoji">🃏</div>
+          <h4>
+            <span class="lang-en">Memory Match</span>
+            <span class="lang-zh" style="display:none">记忆配对</span>
+          </h4>
+          <p>
+            <span class="lang-en">Flip cards to find matching animal pairs</span>
+            <span class="lang-zh" style="display:none">翻牌找相同的动物卡片</span>
+          </p>
+        </div>
+        <div class="screenshot-card">
+          <div class="emoji">🔢</div>
+          <h4>
+            <span class="lang-en">Math Speed</span>
+            <span class="lang-zh" style="display:none">数学速算</span>
+          </h4>
+          <p>
+            <span class="lang-en">Number operations with fruit values</span>
+            <span class="lang-zh" style="display:none">水果代表的数字运算</span>
+          </p>
+        </div>
+        <div class="screenshot-card">
+          <div class="emoji">🏰</div>
+          <h4>
+            <span class="lang-en">Maze Adventure</span>
+            <span class="lang-zh" style="display:none">迷宫探险</span>
+          </h4>
+          <p>
+            <span class="lang-en">Memory-mode maze navigation</span>
+            <span class="lang-zh" style="display:none">记忆模式走出迷宫</span>
+          </p>
+        </div>
+        <div class="screenshot-card">
+          <div class="emoji">🟦</div>
+          <h4>
+            <span class="lang-en">Spatial Awareness</span>
+            <span class="lang-zh" style="display:none">空间感知</span>
+          </h4>
+          <p>
+            <span class="lang-en">Classic Tetris gameplay</span>
+            <span class="lang-zh" style="display:none">俄罗斯方块经典玩法</span>
+          </p>
+        </div>
+        <div class="screenshot-card">
+          <div class="emoji">👂</div>
+          <h4>
+            <span class="lang-en">Auditory Training</span>
+            <span class="lang-zh" style="display:none">听觉训练</span>
+          </h4>
+          <p>
+            <span class="lang-en">Sound recognition and memory</span>
+            <span class="lang-zh" style="display:none">听声音辨别和记忆</span>
+          </p>
+        </div>
+        <div class="screenshot-card">
+          <div class="emoji">⭐</div>
+          <h4>
+            <span class="lang-en">Reward Center</span>
+            <span class="lang-zh" style="display:none">奖励中心</span>
+          </h4>
+          <p>
+            <span class="lang-en">Unlock achievements for rewards</span>
+            <span class="lang-zh" style="display:none">解锁成就获得奖励</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Stats ===== -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="number">20+</div>
+        <div class="label">
+          <span class="lang-en">Fun Games</span>
+          <span class="lang-zh" style="display:none">趣味游戏</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="number">4</div>
+        <div class="label">
+          <span class="lang-en">Training Areas</span>
+          <span class="lang-zh" style="display:none">训练方向</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="number">50+</div>
+        <div class="label">
+          <span class="lang-en">Training Levels</span>
+          <span class="lang-zh" style="display:none">训练关卡</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="number">2</div>
+        <div class="label">
+          <span class="lang-en">Languages</span>
+          <span class="lang-zh" style="display:none">支持语言</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="container">
+    <p>
+      <strong>MindFocus</strong> -
+      <span class="lang-en">Children's Brain Training Games</span>
+      <span class="lang-zh" style="display:none">儿童脑力训练游戏</span>
+    </p>
+    <p>
+      <span class="lang-en">Built with Flutter | Version 1.0.0</span>
+      <span class="lang-zh" style="display:none">使用 Flutter 构建 | 版本 1.0.0</span>
+    </p>
+    <p style="margin-top:16px;">
+      <a href="https://hfhuga-david.github.io/mindfocus/privacy/privacy_policy.html">
+        <span class="lang-en">Privacy Policy</span>
+        <span class="lang-zh" style="display:none">隐私政策</span>
+      </a>
+    </p>
+    <p style="margin-top:16px;font-size:0.85em;opacity:0.6;">
+      &copy; 2026 MindFocus. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+<script>
+function switchLang(lang) {
+  var zhEls = document.querySelectorAll('.lang-zh');
+  var enEls = document.querySelectorAll('.lang-en');
+  if (lang === 'zh') {
+    zhEls.forEach(function(el) { el.style.display = ''; });
+    enEls.forEach(function(el) { el.style.display = 'none'; });
+    document.getElementById('btn-zh').classList.add('active');
+    document.getElementById('btn-en').classList.remove('active');
+    document.documentElement.lang = 'zh-CN';
+  } else {
+    enEls.forEach(function(el) { el.style.display = ''; });
+    zhEls.forEach(function(el) { el.style.display = 'none'; });
+    document.getElementById('btn-en').classList.add('active');
+    document.getElementById('btn-zh').classList.remove('active');
+    document.documentElement.lang = 'en';
+  }
+}
+
+// Auto-detect browser language
+(function() {
+  var browserLang = (navigator.language || navigator.userLanguage).toLowerCase();
+  if (browserLang.startsWith('zh')) {
+    switchLang('zh');
+  }
+})();
+</script>
+
+</body>
+</html>
